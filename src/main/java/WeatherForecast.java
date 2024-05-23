@@ -12,6 +12,7 @@ public class WeatherForecast extends JFrame {
     private JButton forecastButton;
     private JButton convertUnitsBtn;
     private JButton convertBackBtn;
+    private JLabel enterCity;
 
 
     public WeatherForecast() {
@@ -34,25 +35,29 @@ public class WeatherForecast extends JFrame {
         gbc.insets = new Insets(5, 5, 5, 5); // Set padding
 
         // Add components to the panel
-        gbc.gridx = 0;
-        gbc.gridy = 0;
+        gbc.gridx = 1;
+        gbc.gridy = 1;
         gbc.gridwidth = 4; // Span across 4 columns
         panelMain.add(cityName, gbc);
 
         gbc.gridx = 0;
-        gbc.gridy = 1;
+        gbc.gridy = 2;
         gbc.gridwidth = 1; // Reset to single column span
         panelMain.add(forecastButton, gbc);
 
+        gbc.gridx = 2;
+        gbc.gridy = 0;
+        panelMain.add(enterCity, gbc);
+
         gbc.gridx = 1;
-        gbc.gridy = 1;
+        gbc.gridy = 5;
         panelMain.add(convertUnitsBtn, gbc);
 
         gbc.gridx = 2;
-        gbc.gridy = 1;
+        gbc.gridy = 5;
         panelMain.add(convertBackBtn, gbc);
 
-        gbc.gridx = 0;
+        gbc.gridx = 1;
         gbc.gridy = 2;
         gbc.gridwidth = 4; // Span across 4 columns
         gbc.fill = GridBagConstraints.BOTH; // Make the scrollPane fill the space
