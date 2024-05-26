@@ -69,8 +69,9 @@ public class WeatherForecast extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 ApiHandler API = new ApiHandler();
+                //API.API_weather_Call(cityName.getText());
                 API.API_Forecast_Call(cityName.getText());
-                String outputString = API.getForecastEntry();
+                String outputString = API.getWeatherEntry() + API.getForecastEntry();
                 forecastData.setText(outputString);
 
             }
@@ -79,8 +80,9 @@ public class WeatherForecast extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 ApiHandler API = new ApiHandler();
+                //API.API_weather_Call(cityName.getText());
                 API.API_Forecast_Call(cityName.getText());
-                String outputString = API.getForecastEntryConverted();
+                String outputString = API.getWeatherEntryConverted() + API.getForecastEntryConverted();
                 forecastData.setText(outputString);
             }
         });
@@ -88,8 +90,9 @@ public class WeatherForecast extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 ApiHandler API = new ApiHandler();
+                //API.API_weather_Call(cityName.getText());
                 API.API_Forecast_Call(cityName.getText());
-                String outputString = API.getForecastEntry();
+                String outputString = API.getWeatherEntry() + API.getForecastEntry();
                 forecastData.setText(outputString);
             }
         });

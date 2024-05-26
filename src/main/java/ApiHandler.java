@@ -9,21 +9,40 @@ import java.io.IOException;
 
 
 public class ApiHandler {
-    String forecastEntry, forecastEntryConverted;
+    String weatherEntry, weatherEntryConverted, forecastEntry, forecastEntryConverted;
 
     void API_Forecast_Call(String cityName){
         OkHttpClient client = new OkHttpClient();
 
         String apiKey = "3cb7311ba5dd57a76cbbd465a6217e38";
 
-        String url = "https://api.openweathermap.org/data/2.5/forecast?q=" + cityName + "&appid=" + apiKey;
+        //Current weather call
+        String urlC = "https://api.openweathermap.org/data/2.5/weather?q=" + cityName + "&appid=" + apiKey;
+        //Forcast weather call
+        String urlF = "https://api.openweathermap.org/data/2.5/forecast?q=" + cityName + "&appid=" + apiKey;
 
-        Request request = new Request.Builder()
-                .url(url)
+
+        Request request1 = new Request.Builder()
+                .url(urlC)
                 .build();
 
+        Request request2 = new Request.Builder()
+                .url(urlF)
+                .build();
         try {
-            Response response = client.newCall(request).execute();
+            Response response = client.newCall(request1).execute();
+            if (response.isSuccessful()) {
+                String responseData = response.body().string();
+                ParseWeatherData(responseData);
+            } else {
+                System.out.println("Error: " + response.code() + " " + response.message());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            Response response = client.newCall(request2).execute();
             if (response.isSuccessful()) {
                 String responseData = response.body().string();
                 ParseForecastData(responseData);
@@ -33,6 +52,45 @@ public class ApiHandler {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    void ParseWeatherData(String jsonData) {
+        JSONObject jsonObject = new JSONObject(jsonData);
+        //TODO: Figure out how to display icons from weather data in GUI using API
+
+        StringBuilder forecastBuilder = new StringBuilder();
+        StringBuilder forecastBuilderConverted = new StringBuilder();
+
+
+        JSONObject currWeather = new JSONObject(jsonData);
+
+        double tempK = currWeather.getJSONObject("main").getDouble("temp");
+        double temp_MaxK = currWeather.getJSONObject("main").getDouble("temp_max");
+        double temp_MinK = currWeather.getJSONObject("main").getDouble("temp_min");
+        double windSpeedM = currWeather.getJSONObject("wind").getDouble("speed");
+        JSONObject weatherObject = currWeather.getJSONArray("weather").getJSONObject(0);
+        String weatherEffect = weatherObject.getString("main");
+        int humidity = currWeather.getJSONObject("main").getInt("humidity");
+
+        double tempF = 1.8 * (tempK - 273.0) + 32.0;
+        double temp_MaxF = 1.8 * (temp_MaxK - 273.0) + 32.0;
+        double temp_MinF = 1.8 * (temp_MinK - 273.0) + 32.0;
+        double tempC = convertTempToC(tempF);
+        double temp_MaxC = convertTempToC(temp_MaxF);
+        double temp_MinC = convertTempToC(temp_MinF);
+        double windSpeedF = convertWindSpeedToFPerSec(windSpeedM);
+        String entry = String.format(" Current Weather\n Temperature: %.2f°F\n" +
+                        " MinTemp: %.2f°F\n MaxTemp: %.2f°F\n Wind Speed: %.2fm/s\n Weather: %s\n Humidity: %d\n\n",
+                tempF, temp_MinF, temp_MaxF, windSpeedM, weatherEffect, humidity);
+        String entryConverted = String.format("Current Weather\n Temperature: %.2f°C\n" +
+                        " MinTemp: %.2f°C\n MaxTemp: %.2f°C\n Wind Speed: %.2ff/s\n Weather: %s\n Humidity: %d\n\n",
+                tempC, temp_MinC, temp_MaxC, windSpeedF, weatherEffect, humidity);
+
+        forecastBuilder.append(entry);
+        forecastBuilderConverted.append(entryConverted);
+
+        weatherEntry = forecastBuilder.toString();
+        weatherEntryConverted = forecastBuilderConverted.toString();
     }
 
     void ParseForecastData(String jsonData) {
@@ -63,11 +121,11 @@ public class ApiHandler {
             double temp_MaxC = convertTempToC(temp_MaxF);
             double temp_MinC = convertTempToC(temp_MinF);
             double windSpeedF = convertWindSpeedToFPerSec(windSpeedM);
-            String entry = String.format("Timestamp: %s\nTemperature: %.2f°F\n" +
-                            "MinTemp: %.2f°F\n MaxTemp: %.2f°F\n Wind Speed: %.2fm/s\n Weather: %s\n Humidity: %d\n\n",
+            String entry = String.format(" Timestamp: %s\n Temperature: %.2f°F\n" +
+                            " MinTemp: %.2f°F\n MaxTemp: %.2f°F\n Wind Speed: %.2fm/s\n Weather: %s\n Humidity: %d\n\n",
                     timeStamp, tempF, temp_MinF, temp_MaxF, windSpeedM, weatherEffect, humidity);
-            String entryConverted = String.format("Timestamp: %s\nTemperature: %.2f°C\n" +
-                            "MinTemp: %.2f°C\n MaxTemp: %.2f°C\n Wind Speed: %.2ff/s\n Weather: %s\n Humidity: %d\n\n",
+            String entryConverted = String.format("Timestamp: %s\n Temperature: %.2f°C\n" +
+                            " MinTemp: %.2f°C\n MaxTemp: %.2f°C\n Wind Speed: %.2ff/s\n Weather: %s\n Humidity: %d\n\n",
                     timeStamp, tempC, temp_MinC, temp_MaxC, windSpeedF, weatherEffect, humidity);
 
             forecastBuilder.append(entry);
@@ -90,5 +148,11 @@ public class ApiHandler {
     }
     String getForecastEntryConverted() {
         return forecastEntryConverted;
+    }
+    String getWeatherEntry(){
+        return weatherEntry;
+    }
+    String getWeatherEntryConverted() {
+        return weatherEntryConverted;
     }
 }
