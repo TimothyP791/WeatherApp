@@ -14,11 +14,11 @@ public class ApiHandler {
     void API_Forecast_Call(String cityName){
         OkHttpClient client = new OkHttpClient();
 
-        String apiKey = "3cb7311ba5dd57a76cbbd465a6217e38";
+        String apiKey = "3cb7311ba5dd57a76cbbd465a6217e38"; // set API key for reusability
 
         //Current weather call
         String urlC = "https://api.openweathermap.org/data/2.5/weather?q=" + cityName + "&appid=" + apiKey;
-        //Forcast weather call
+        //Forecast weather call
         String urlF = "https://api.openweathermap.org/data/2.5/forecast?q=" + cityName + "&appid=" + apiKey;
 
 
@@ -93,7 +93,7 @@ public class ApiHandler {
         weatherEntryConverted = forecastBuilderConverted.toString();
     }
 
-    void ParseForecastData(String jsonData) {
+    void ParseForecastData(String jsonData) { //TODO Extract this functionality to a ParseData class to make code more DRY
         JSONObject jsonObject = new JSONObject(jsonData);
         //TODO: Figure out how to display icons from weather data in GUI using API
 
@@ -101,7 +101,7 @@ public class ApiHandler {
         StringBuilder forecastBuilderConverted = new StringBuilder();
 
         JSONArray forecastList = jsonObject.getJSONArray("list");
-        for (int i = 0; i < forecastList.length(); i++) { //TODO: DO loop calculation to get 5 day forecast
+        for (int i = 0; i < forecastList.length(); i++) { //TODO: Do loop calculation to get 5 day forecast
             JSONObject forecast = forecastList.getJSONObject(i);
             String timeStamp = forecast.getString("dt_txt");
             JSONObject main = forecast.getJSONObject("main");
@@ -117,10 +117,10 @@ public class ApiHandler {
             double tempF = 1.8 * (tempK - 273.0) + 32.0;
             double temp_MaxF = 1.8 * (temp_MaxK - 273.0) + 32.0;
             double temp_MinF = 1.8 * (temp_MinK - 273.0) + 32.0;
-            double tempC = convertTempToC(tempF);
-            double temp_MaxC = convertTempToC(temp_MaxF);
-            double temp_MinC = convertTempToC(temp_MinF);
-            double windSpeedF = convertWindSpeedToFPerSec(windSpeedM);
+            double tempC = convertTempToC(tempF);         //Insert Fahrenheit for Celsius calculation
+            double temp_MaxC = convertTempToC(temp_MaxF); //Same for Max
+            double temp_MinC = convertTempToC(temp_MinF); //Same for Min
+            double windSpeedF = convertWindSpeedToFPerSec(windSpeedM); //Insert m/s to get f/s calculation
             String entry = String.format(" Timestamp: %s\n Temperature: %.2f°F\n" +
                             " MinTemp: %.2f°F\n MaxTemp: %.2f°F\n Wind Speed: %.2fm/s\n Weather: %s\n Humidity: %d\n\n",
                     timeStamp, tempF, temp_MinF, temp_MaxF, windSpeedM, weatherEffect, humidity);
@@ -134,6 +134,7 @@ public class ApiHandler {
         forecastEntry = forecastBuilder.toString();
         forecastEntryConverted = forecastBuilderConverted.toString();
 }
+    //Helper functions to handle conversions
     double convertTempToC(double temp) {
         temp = (temp - 32.0) * (5.0 / 9.0);
         return temp;
@@ -142,7 +143,7 @@ public class ApiHandler {
         speed *= 3.281;
         return speed;
     }
-
+    //Getter functions for Weather forecast class
     String getForecastEntry(){
         return forecastEntry;
     }
